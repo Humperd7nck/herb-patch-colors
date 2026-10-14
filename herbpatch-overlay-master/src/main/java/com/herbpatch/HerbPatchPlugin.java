@@ -1,0 +1,66 @@
+package com.herbpatch;
+
+import com.google.inject.Provides;
+import com.herbpatch.constants.HerbPatch;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.GameObject;
+import net.runelite.api.GameState;
+import net.runelite.api.events.GameObjectSpawned;
+import net.runelite.api.events.GameStateChanged;
+import net.runelite.client.config.ConfigManager;
+import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.plugins.Plugin;
+import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.ui.overlay.OverlayManager;
+
+import javax.inject.Inject;
+
+@Slf4j
+@PluginDescriptor(
+    name = "Herb Patch Colors",
+    description = "Herb state colors, Weiss correction, and compost overlay",
+    tags = { "herblore", "farming", "timer" }
+)
+public class HerbPatchPlugin extends Plugin {
+    @Inject private OverlayManager overlayManager;
+    @Inject private HerbPatchOverlay herbOverlay;
+
+    @Getter(AccessLevel.PACKAGE)
+    private GameObject herbPatchObject;
+
+    @Provides
+    HerbPatchConfig provideConfig(ConfigManager configManager) {
+        return configManager.getConfig(HerbPatchConfig.class);
+    }
+
+    @Override
+    protected void startUp() {
+        // Add HerbPatchOverlay to OverlayManager at start up
+        overlayManager.add(herbOverlay);
+    }
+
+    @Override
+    protected void shutDown() {
+        overlayManager.remove(herbOverlay);
+        herbPatchObject = null;
+    }
+
+    @Subscribe
+    public void onGameObjectSpawned(GameObjectSpawned event) {
+        HerbPatch patch = HerbPatch.byObjectId(event.getGameObject().getId());
+        if (patch == null) return;
+
+        herbPatchObject = event.getGameObject();
+        log.debug("Herb patch [{}] spawned", herbPatchObject.getId());
+    }
+
+    @Subscribe
+    public void onGameStateChanged(GameStateChanged event) {
+        // When changing state (e.g. teleporting) clear herb object
+        if (event.getGameState() == GameState.LOADING) {
+            herbPatchObject = null;
+        }
+    }
+}
