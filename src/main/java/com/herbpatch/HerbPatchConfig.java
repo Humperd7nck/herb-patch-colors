@@ -7,6 +7,7 @@ import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigSection;
 
 import java.awt.*;
+import net.runelite.client.config.Range;
 
 @ConfigGroup(HerbPatchConfig.CONFIG_GROUP)
 public interface HerbPatchConfig extends Config {
@@ -177,6 +178,78 @@ public interface HerbPatchConfig extends Config {
     default Color compostColor() {
         return new Color(56, 189, 248);
     }
+
+    @ConfigSection(
+        name = "Herbs Ready HUD",
+        description = "A small herb icon that shows when your herb patches are ready",
+        position = 400
+    )
+    String herbsReadySection = "herbsReadyHud";
+
+    @ConfigItem(
+        keyName = "showHerbsReadyHud",
+        name = "Show Herbs Ready HUD",
+        description = "Show a green Herbs Ready indicator when all ten herb patches are predicted ready to harvest",
+        section = herbsReadySection,
+        position = 401
+    )
+    default boolean showHerbsReadyHud() { return false; }
+
+    @ConfigItem(
+        keyName = "showNotReadyState",
+        name = "Show Not Ready",
+        description = "Also show a red Not Ready indicator while any herb patch is not ready. Off by default",
+        section = herbsReadySection,
+        position = 402
+    )
+    default boolean showNotReadyState() { return false; }
+
+    @Range(min = 75, max = 150)
+    @ConfigItem(
+        keyName = "herbsHudScalePercent",
+        name = "HUD size (%)",
+        description = "Scale the herb indicator from 75% to 150%",
+        section = herbsReadySection,
+        position = 403
+    )
+    default int herbsHudScalePercent() { return 100; }
+
+    @ConfigItem(
+        keyName = "herbsHudReadyColor",
+        name = "Ready background",
+        description = "Background color when all ten patches are ready",
+        section = herbsReadySection,
+        position = 404
+    )
+    default Color herbsHudReadyColor() { return new Color(218, 242, 208); }
+
+    @ConfigItem(
+        keyName = "herbsHudNotReadyColor",
+        name = "Not Ready background",
+        description = "Background color while one or more patches are not ready, when enabled",
+        section = herbsReadySection,
+        position = 405
+    )
+    default Color herbsHudNotReadyColor() { return new Color(251, 226, 213); }
+
+    @ConfigItem(
+        keyName = "herbsHudTextColor",
+        name = "Text color",
+        description = "Color of the Herbs Ready and Not Ready text",
+        section = herbsReadySection,
+        position = 406
+    )
+    default Color herbsHudTextColor() { return Color.BLACK; }
+
+    @Range(min = 0, max = 100)
+    @ConfigItem(
+        keyName = "herbsHudOpacity",
+        name = "Background opacity (%)",
+        description = "Opacity of the colored background; the text, border and icon stay visible",
+        section = herbsReadySection,
+        position = 407
+    )
+    default int herbsHudOpacity() { return 100; }
 
     @AllArgsConstructor
     enum OverlayType {

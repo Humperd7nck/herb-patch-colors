@@ -20,12 +20,13 @@ import javax.inject.Inject;
 @Slf4j
 @PluginDescriptor(
     name = "Herb Patch Colors",
-    description = "Herb state colors, Weiss correction, and compost overlay",
+    description = "Herb patch colors, compost highlighting, and an optional Herbs Ready HUD",
     tags = { "herblore", "farming", "timer" }
 )
 public class HerbPatchPlugin extends Plugin {
     @Inject private OverlayManager overlayManager;
     @Inject private HerbPatchOverlay herbOverlay;
+    @Inject private HerbsReadyOverlay herbsReadyOverlay;
 
     @Getter(AccessLevel.PACKAGE)
     private GameObject herbPatchObject;
@@ -39,11 +40,13 @@ public class HerbPatchPlugin extends Plugin {
     protected void startUp() {
         // Add HerbPatchOverlay to OverlayManager at start up
         overlayManager.add(herbOverlay);
+        overlayManager.add(herbsReadyOverlay);
     }
 
     @Override
     protected void shutDown() {
         overlayManager.remove(herbOverlay);
+        overlayManager.remove(herbsReadyOverlay);
         herbPatchObject = null;
     }
 
